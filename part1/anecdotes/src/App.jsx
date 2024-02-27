@@ -13,7 +13,8 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
-
+  const points = new Array(anecdotes.length).fill(0);
+  const [votes, setVotes] = useState(points);
   return (
     <div>
       <button
@@ -26,6 +27,20 @@ const App = () => {
       <br />
       <br />
       {anecdotes[selected]}
+      <br />
+      has {votes[selected]} votes
+      <br />
+      <button
+        onClick={() => {
+          setVotes((prevVotes) => {
+            const newVotes = [...prevVotes];
+            newVotes[selected] += 1;
+            return newVotes;
+          });
+        }}
+      >
+        Vote
+      </button>
     </div>
   );
 };
