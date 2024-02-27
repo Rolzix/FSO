@@ -41,6 +41,8 @@ const App = () => {
       >
         Vote
       </button>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[votes.indexOf(Math.max(...votes))]}
     </div>
   );
 };
