@@ -1,7 +1,7 @@
-const Persons = ({ persons, filtered }) => {
+const Persons = ({ persons, filtered, filterstatus }) => {
   return (
     <div>
-      {filtered
+      {filterstatus
         ? filtered.map((person) => (
             <div key={person.name}>
               {person.name} {person.number}
