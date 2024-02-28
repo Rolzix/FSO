@@ -9,7 +9,15 @@ const Content = ({ content }) => {
     </div>
   ));
 
-  return <>{courseInfo}</>;
+  const totalExercises = content.reduce((acc, part) => acc + part.exercises, 0);
+  console;
+  return (
+    <>
+      {courseInfo}
+      <br></br>
+      <h5> Total of {totalExercises} exercises</h5>
+    </>
+  );
 };
 
 const Course = (props) => {
