@@ -8,7 +8,7 @@ const Content = ({ content }) => {
       {part.name} {part.exercises}
     </div>
   ));
-
+  // already used reduce
   const totalExercises = content.reduce((acc, part) => acc + part.exercises, 0);
   console;
   return (
