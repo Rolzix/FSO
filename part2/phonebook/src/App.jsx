@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./Components/Filter";
 import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
+import server from "./Components/server";
 import axios from "axios";
 
 const App = () => {
@@ -12,8 +13,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    server.getAll().then((response) => {
+      setPersons(response);
     });
   }, []);
 
@@ -37,6 +38,9 @@ const App = () => {
     } else {
       const newEntry = { name: newName, number: newNumber };
       setPersons(persons.concat(newEntry));
+      server.create(newEntry).then((response) => {
+        console.log(response);
+      });
     }
   };
   return (
