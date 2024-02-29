@@ -3,12 +3,15 @@ import Filter from "./Components/Filter";
 import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
 import server from "./Components/server";
+import Notification from "./Components/Notification";
+import "./App.css";
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [filtered, setFiltered] = useState(persons);
   const [filterStatus, setFilterStatus] = useState(false);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     server.getAll().then((response) => {
@@ -27,6 +30,13 @@ const App = () => {
       setFiltered(filtered);
       setFilterStatus(true);
     }
+  };
+
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   const handleSubmit = (e) => {
@@ -48,18 +58,22 @@ const App = () => {
               person.id !== currentPerson.id ? person : response
             )
           );
+          showNotification(`Updated ${newName} number to ${newNumber}`);
         });
       }
     } else {
       const newEntry = { name: newName, number: newNumber };
       server.create(newEntry).then((response) => {
         setPersons(persons.concat(response));
+        showNotification(`Added ${newName}`);
       });
     }
+    e.target.reset();
   };
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter filter={filter} persons={persons} />
       <h3>Add a new:</h3>
       <PersonForm
