@@ -4,7 +4,6 @@ import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
 import server from "./Components/server";
 import axios from "axios";
-
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [filtered, setFiltered] = useState(persons);
@@ -37,9 +36,8 @@ const App = () => {
       alert(`${newName} is already added to phonebook`);
     } else {
       const newEntry = { name: newName, number: newNumber };
-      setPersons(persons.concat(newEntry));
       server.create(newEntry).then((response) => {
-        console.log(response);
+        setPersons(persons.concat(response));
       });
     }
   };
@@ -58,6 +56,7 @@ const App = () => {
         persons={persons}
         filtered={filtered}
         filterstatus={filterStatus}
+        setPersons={setPersons}
       />
     </div>
   );

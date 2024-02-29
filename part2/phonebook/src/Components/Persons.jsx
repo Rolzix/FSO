@@ -1,15 +1,30 @@
-const Persons = ({ persons, filtered, filterstatus }) => {
+import server from "./server";
+const Persons = ({ persons, filtered, filterstatus, setPersons }) => {
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      server.dbDelete(id).then((response) => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
+    }
+  };
+
   return (
     <div>
       {filterstatus
         ? filtered.map((person) => (
-            <div key={person.name}>
+            <div key={person.id}>
               {person.name} {person.number}
+              <button onClick={() => handleDelete(person.id, person.name)}>
+                delete
+              </button>
             </div>
           ))
         : persons.map((person) => (
-            <div key={person.name}>
-              {person.name} {person.number}
+            <div key={person.id}>
+              {person.name} {`${person.number} `}
+              <button onClick={() => handleDelete(person.id, person.name)}>
+                delete
+              </button>
             </div>
           ))}
     </div>
