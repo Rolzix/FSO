@@ -41,7 +41,16 @@ function App() {
     }
   };
 
-  // console.log("At app", filteredCountries[0]);
+  const selectSingleCountry = (country) => {
+    setFilteredCountries(
+      countries.filter((targetCountry) => {
+        return targetCountry.name.common === country.name.common;
+      })
+    );
+    setFindAmount(1);
+  };
+
+  // console.log(filteredCountries);
   return (
     <div>
       Find countries: <input onChange={handleFilter}></input>
@@ -51,7 +60,10 @@ function App() {
         <p>Too many matches, please be more specific</p>
       ) : findAmount > 1 ? (
         filteredCountries.map((country) => (
-          <div key={country.name.common}>{country.name.common}</div>
+          <div className="country" key={country.name.common}>
+            {country.name.common}
+            <button onClick={() => selectSingleCountry(country)}>show</button>
+          </div>
         ))
       ) : (
         <p>No matches found</p>
