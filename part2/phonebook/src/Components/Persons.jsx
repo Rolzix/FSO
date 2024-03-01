@@ -1,10 +1,25 @@
 import server from "./server";
-const Persons = ({ persons, filtered, filterstatus, setPersons }) => {
+const Persons = ({
+  persons,
+  filtered,
+  filterstatus,
+  setPersons,
+  showNotification,
+}) => {
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
-      server.dbDelete(id).then((response) => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+      server
+        .dbDelete(id)
+        .then((response) => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch((error) => {
+          showNotification(
+            `Information of ${name} has already been removed from the server`,
+            "red"
+          );
+          setPersons(persons.filter((person) => person.id !== id));
+        });
     }
   };
 

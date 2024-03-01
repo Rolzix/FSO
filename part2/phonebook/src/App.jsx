@@ -11,7 +11,7 @@ const App = () => {
   const [filterStatus, setFilterStatus] = useState(false);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [notification, setNotification] = useState(null);
+  const [notification, setNotification] = useState([null, ""]);
 
   useEffect(() => {
     server.getAll().then((response) => {
@@ -32,10 +32,10 @@ const App = () => {
     }
   };
 
-  const showNotification = (message) => {
-    setNotification(message);
+  const showNotification = (message, color) => {
+    setNotification([message, color]);
     setTimeout(() => {
-      setNotification(null);
+      setNotification([null, ""]);
     }, 3000);
   };
 
@@ -52,21 +52,37 @@ const App = () => {
         )
       ) {
         const updatedPerson = { ...currentPerson, number: newNumber };
-        server.update(currentPerson.id, updatedPerson).then((response) => {
-          setPersons(
-            persons.map((person) =>
-              person.id !== currentPerson.id ? person : response
-            )
-          );
-          showNotification(`Updated ${newName} number to ${newNumber}`);
-        });
+        server
+          .update(currentPerson.id, updatedPerson)
+          .then((response) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== currentPerson.id ? person : response
+              )
+            );
+            showNotification(`Updated ${newName} number to ${newNumber}`);
+          })
+          .catch((error) => {
+            showNotification(
+              `Information of ${newName} does not exist on the server.`,
+              "red"
+            );
+            setPersons(
+              persons.filter((person) => person.id !== currentPerson.id)
+            );
+          });
       }
     } else {
       const newEntry = { name: newName, number: newNumber };
-      server.create(newEntry).then((response) => {
-        setPersons(persons.concat(response));
-        showNotification(`Added ${newName}`);
-      });
+      server
+        .create(newEntry)
+        .then((response) => {
+          setPersons(persons.concat(response));
+          showNotification(`Added ${newName}`, "green");
+        })
+        .catch((error) => {
+          showNotification(error.response.data.error, "red");
+        });
     }
     e.target.reset();
   };
@@ -87,6 +103,7 @@ const App = () => {
         filtered={filtered}
         filterstatus={filterStatus}
         setPersons={setPersons}
+        showNotification={showNotification}
       />
     </div>
   );
