@@ -4,7 +4,7 @@ const app = express();
 
 app.use(express.json());
 
-const data = [
+let data = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -42,11 +42,17 @@ app.get("/api/persons/:id", (request, response) => {
   if (data[paramId]) {
     const { id, name, number } = data[paramId];
     const info = `id: ${id} <br> name: ${name} <br> number: ${number}`;
-    console.log(id);
     response.send(info);
   } else {
     response.status(404).send("Id not found");
   }
+});
+
+app.delete("/api/persons/:id", (request, response) => {
+  const paramId = request.params.id;
+  const removedEntry = data.find((person) => person.id == paramId);
+  data = data.filter((person) => person.id != paramId);
+  response.send(`deleted ${removedEntry.name}`);
 });
 
 const PORT = 3001;
