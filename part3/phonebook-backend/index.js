@@ -37,6 +37,18 @@ app.get("/api/info", (request, response) => {
   response.send(info);
 });
 
+app.get("/api/persons/:id", (request, response) => {
+  const paramId = request.params.id;
+  if (data[paramId]) {
+    const { id, name, number } = data[paramId];
+    const info = `id: ${id} <br> name: ${name} <br> number: ${number}`;
+    console.log(id);
+    response.send(info);
+  } else {
+    response.status(404).send("Id not found");
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
