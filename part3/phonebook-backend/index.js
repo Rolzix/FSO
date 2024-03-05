@@ -55,6 +55,18 @@ app.delete("/api/persons/:id", (request, response) => {
   response.send(`deleted ${removedEntry.name}`);
 });
 
+app.post("/api/persons", (request, response) => {
+  const { name, number } = request.body;
+  newEntry = {
+    id: Math.floor(Math.random() * 10000),
+    name: name,
+    number: number,
+  };
+
+  data = data.concat(newEntry);
+  response.json(newEntry);
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
