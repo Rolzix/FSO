@@ -60,7 +60,10 @@ const App = () => {
                 person.id !== currentPerson.id ? person : response
               )
             );
-            showNotification(`Updated ${newName} number to ${newNumber}`);
+            showNotification(
+              `Updated ${newName} number to ${newNumber}`,
+              "green"
+            );
           })
           .catch((error) => {
             showNotification(
