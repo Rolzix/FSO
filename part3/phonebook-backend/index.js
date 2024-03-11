@@ -1,7 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
-
+const Person = require("./Models/person");
 const app = express();
 
 app.use(express.json());
@@ -28,30 +29,43 @@ app.use(
   })
 );
 
-let data = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+// let data = [
+//   {
+//     id: 1,
+//     name: "Arto Hellas",
+//     number: "040-123456",
+//   },
+//   {
+//     id: 2,
+//     name: "Ada Lovelace",
+//     number: "39-44-5323523",
+//   },
+//   {
+//     id: 3,
+//     name: "Dan Abramov",
+//     number: "12-43-234345",
+//   },
+//   {
+//     id: 4,
+//     name: "Mary Poppendieck",
+//     number: "39-23-6423122",
+//   },
+// ];
+let data;
+async function fetchPersons() {
+  data = await Person.find({ name: { $exists: true } }).then((persons) => {
+    // console.log("persons", persons);
+    return persons;
+  });
+}
+fetchPersons();
 
-app.get("/api/persons", (request, response) => response.json(data));
+app.get("/api/persons", (request, response) => {
+  Person.find({ name: { $exists: true } }).then((persons) => {
+    // console.log("persons", persons);
+    response.json(persons);
+  });
+});
 
 app.get("/api/info", (request, response) => {
   const info = `Phonebook has info for ${
@@ -63,6 +77,7 @@ app.get("/api/info", (request, response) => {
 
 app.get("/api/persons/:id", (request, response) => {
   const paramId = request.params.id;
+
   if (data[paramId]) {
     const { id, name, number } = data[paramId];
     const info = `id: ${id} <br> name: ${name} <br> number: ${number}`;
@@ -101,7 +116,7 @@ app.post("/api/persons", (request, response) => {
   }
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
