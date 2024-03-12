@@ -96,19 +96,31 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
   const { name, number } = request.body;
-  if (data.find((person) => person.name === name)) {
-    return response.status(400).json({ error: "name must be unique" });
-  }
+
+  // if (data.find((person) => person.name === name)) {
+
+  //   return response.status(400).json({ error: "name must be unique" });
+  // }
 
   if (name && number) {
-    newEntry = {
-      id: Math.floor(Math.random() * 10000),
+    const newEntry = new Person({
+      // id: Math.floor(Math.random() * 10000),
       name: name,
       number: number,
-    };
-
-    data = data.concat(newEntry);
-    response.json(newEntry);
+    });
+    newEntry
+      .save()
+      .then((savedPerson) => {
+        console.log("savedPerson", savedPerson);
+        response.json(savedPerson);
+      })
+      .catch((error) => {
+        console.error("Error saving person:", error);
+        response
+          .status(500)
+          .json({ error: "An error occurred while saving the person." });
+      });
+    // data = data.concat(newEntry);
   } else if (!name) {
     return response.status(400).json({ error: "missing name" });
   } else {
