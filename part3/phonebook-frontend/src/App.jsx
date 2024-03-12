@@ -14,9 +14,16 @@ const App = () => {
   const [notification, setNotification] = useState([null, ""]);
 
   useEffect(() => {
-    server.getAll().then((response) => {
-      setPersons(response);
-    });
+    server
+      .getAll()
+      .then((response) => {
+        setPersons(response);
+        console.log("getAll response", response);
+      })
+
+      .catch((error) => {
+        showNotification("Failed to fetch data from server", "red");
+      });
   }, []);
 
   const filter = (e) => {
@@ -84,7 +91,7 @@ const App = () => {
           showNotification(`Added ${newName}`, "green");
         })
         .catch((error) => {
-          showNotification(error.response.data.error, "red");
+          showNotification(error.response.data.error.message, "red");
         });
     }
     e.target.reset();

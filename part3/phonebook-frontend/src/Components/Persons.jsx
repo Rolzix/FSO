@@ -26,23 +26,27 @@ const Persons = ({
 
   return (
     <div>
-      {filterstatus
-        ? filtered.map((person) => (
-            <div key={person.id}>
-              {person.name} {person.number}
-              <button onClick={() => handleDelete(person.id, person.name)}>
-                delete
-              </button>
-            </div>
-          ))
-        : persons.map((person) => (
-            <div key={person.id}>
-              {person.name} {`${person.number} `}
-              <button onClick={() => handleDelete(person.id, person.name)}>
-                delete
-              </button>
-            </div>
-          ))}
+      {filterstatus ? (
+        filtered.map((person) => (
+          <div key={person.id}>
+            {person.name} {person.number}
+            <button onClick={() => handleDelete(person.id, person.name)}>
+              delete
+            </button>
+          </div>
+        ))
+      ) : Array.isArray(persons) && persons.length > 0 ? (
+        persons.map((person) => (
+          <div key={person.id}>
+            {person.name} {`${person.number} `}
+            <button onClick={() => handleDelete(person.id, person.name)}>
+              delete
+            </button>
+          </div>
+        ))
+      ) : (
+        <p>No persons to display</p>
+      )}
     </div>
   );
 };
