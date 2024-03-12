@@ -125,6 +125,26 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({ error: "missing number" });
   }
 });
+
+app.put("/api/persons/:id", (request, response) => {
+  const paramId = request.params.id;
+  const { name, number } = request.body;
+
+  const person = {
+    name: name,
+    number: number,
+  };
+
+  Person.findByIdAndUpdate(paramId, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => {
+      console.error("Error updating person:", error);
+      next(error);
+    });
+});
+
 app.use(unknownEndpoint);
 app.use(errorHandler);
 
