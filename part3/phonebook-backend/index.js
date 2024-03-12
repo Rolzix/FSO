@@ -77,21 +77,40 @@ app.get("/api/info", (request, response) => {
 
 app.get("/api/persons/:id", (request, response) => {
   const paramId = request.params.id;
-
-  if (data[paramId]) {
-    const { id, name, number } = data[paramId];
-    const info = `id: ${id} <br> name: ${name} <br> number: ${number}`;
-    response.send(info);
-  } else {
-    response.status(404).send("Id not found");
-  }
+  Person.findById(paramId)
+    .then((person) => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching person:", error);
+      response.status(400).send({ error: "malformatted id" });
+    });
+  // if (data[paramId]) {
+  //   const { id, name, number } = data[paramId];
+  //   const info = `id: ${id} <br> name: ${name} <br> number: ${number}`;
+  //   response.send(info);
+  // } else {
+  //   response.status(404).send("Id not found");
+  // }
 });
 
 app.delete("/api/persons/:id", (request, response) => {
   const paramId = request.params.id;
-  const removedEntry = data.find((person) => person.id == paramId);
-  data = data.filter((person) => person.id != paramId);
-  response.send(`deleted ${removedEntry.name}`);
+  // const removedEntry = data.find((person) => person.id == paramId);
+  // data = data.filter((person) => person.id != paramId);
+  // response.send(`deleted ${removedEntry.name}`);
+  Person.findByIdAndDelete(paramId)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => {
+      console.error("Error deleting person:", error);
+      response.status(400).send({ error: "malformatted id" });
+    });
 });
 
 app.post("/api/persons", (request, response) => {
