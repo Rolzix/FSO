@@ -43,7 +43,7 @@ const App = () => {
     setNotification([message, color]);
     setTimeout(() => {
       setNotification([null, ""]);
-    }, 3000);
+    }, 5000);
   };
 
   const handleSubmit = (e) => {
@@ -91,6 +91,7 @@ const App = () => {
           showNotification(`Added ${newName}`, "green");
         })
         .catch((error) => {
+          console.log(error.response.data.error.message);
           showNotification(error.response.data.error.message, "red");
         });
     }
