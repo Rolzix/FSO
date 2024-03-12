@@ -29,28 +29,6 @@ app.use(
   })
 );
 
-// let data = [
-//   {
-//     id: 1,
-//     name: "Arto Hellas",
-//     number: "040-123456",
-//   },
-//   {
-//     id: 2,
-//     name: "Ada Lovelace",
-//     number: "39-44-5323523",
-//   },
-//   {
-//     id: 3,
-//     name: "Dan Abramov",
-//     number: "12-43-234345",
-//   },
-//   {
-//     id: 4,
-//     name: "Mary Poppendieck",
-//     number: "39-23-6423122",
-//   },
-// ];
 let data;
 async function fetchPersons() {
   data = await Person.find({ name: { $exists: true } }).then((persons) => {
@@ -59,6 +37,24 @@ async function fetchPersons() {
   });
 }
 fetchPersons();
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).send({ error: error.message });
+  } else if (error.name === "JsonWebTokenError") {
+    return response.status(401).json({ error: "invalid token" });
+  }
+
+  next(error);
+};
 
 app.get("/api/persons", (request, response) => {
   Person.find({ name: { $exists: true } }).then((persons) => {
@@ -87,43 +83,27 @@ app.get("/api/persons/:id", (request, response) => {
     })
     .catch((error) => {
       console.error("Error fetching person:", error);
-      response.status(400).send({ error: "malformatted id" });
+      next(error);
     });
-  // if (data[paramId]) {
-  //   const { id, name, number } = data[paramId];
-  //   const info = `id: ${id} <br> name: ${name} <br> number: ${number}`;
-  //   response.send(info);
-  // } else {
-  //   response.status(404).send("Id not found");
-  // }
 });
 
 app.delete("/api/persons/:id", (request, response) => {
   const paramId = request.params.id;
-  // const removedEntry = data.find((person) => person.id == paramId);
-  // data = data.filter((person) => person.id != paramId);
-  // response.send(`deleted ${removedEntry.name}`);
+
   Person.findByIdAndDelete(paramId)
     .then((result) => {
       response.status(204).end();
     })
     .catch((error) => {
-      console.error("Error deleting person:", error);
-      response.status(400).send({ error: "malformatted id" });
+      console.error("Error deleting person:");
+      next(error);
     });
 });
 
 app.post("/api/persons", (request, response) => {
   const { name, number } = request.body;
-
-  // if (data.find((person) => person.name === name)) {
-
-  //   return response.status(400).json({ error: "name must be unique" });
-  // }
-
   if (name && number) {
     const newEntry = new Person({
-      // id: Math.floor(Math.random() * 10000),
       name: name,
       number: number,
     });
@@ -139,13 +119,14 @@ app.post("/api/persons", (request, response) => {
           .status(500)
           .json({ error: "An error occurred while saving the person." });
       });
-    // data = data.concat(newEntry);
   } else if (!name) {
     return response.status(400).json({ error: "missing name" });
   } else {
     return response.status(400).json({ error: "missing number" });
   }
 });
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
