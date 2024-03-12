@@ -64,13 +64,15 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/api/info", (request, response) => {
-  const info = `Phonebook has info for ${
-    data.length
-  } people <br><br> ${new Date()}`;
-
-  response.send(info);
+  Person.countDocuments({ name: { $exists: true } })
+    .then((count) => {
+      const info = `Phonebook has info for ${count} people <br><br> ${new Date()}`;
+      response.send(info);
+    })
+    .catch((error) => {
+      next(error);
+    });
 });
-
 app.get("/api/persons/:id", (request, response) => {
   const paramId = request.params.id;
   Person.findById(paramId)
