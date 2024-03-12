@@ -32,7 +32,6 @@ app.use(
 let data;
 async function fetchPersons() {
   data = await Person.find({ name: { $exists: true } }).then((persons) => {
-    // console.log("persons", persons);
     return persons;
   });
 }
