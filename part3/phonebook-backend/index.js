@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static("dist"));
 
-morgan.token("body", function (req, res) {
+morgan.token("body", function (req) {
   if (req.method === "POST") {
     return JSON.stringify(req.body);
   }
@@ -29,13 +29,13 @@ app.use(
   })
 );
 
-let data;
-async function fetchPersons() {
-  data = await Person.find({ name: { $exists: true } }).then((persons) => {
-    return persons;
-  });
-}
-fetchPersons();
+// let data;
+// async function fetchPersons() {
+//   data = await Person.find({ name: { $exists: true } }).then((persons) => {
+//     return persons;
+//   });
+// }
+// fetchPersons();
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
@@ -50,8 +50,6 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: error.message });
   } else if (error.name === "JsonWebTokenError") {
     return response.status(401).json({ error: "invalid token" });
-  } else if (error.name === "ValidationError") {
-    return response.status(400).json({ error: error.message });
   }
 
   next(error);
@@ -64,7 +62,7 @@ app.get("/api/persons", (request, response) => {
   });
 });
 
-app.get("/api/info", (request, response) => {
+app.get("/api/info", (request, response, next) => {
   Person.countDocuments({ name: { $exists: true } })
     .then((count) => {
       const info = `Phonebook has info for ${count} people <br><br> ${new Date()}`;
@@ -74,7 +72,7 @@ app.get("/api/info", (request, response) => {
       next(error);
     });
 });
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   const paramId = request.params.id;
   Person.findById(paramId)
     .then((person) => {
@@ -90,11 +88,11 @@ app.get("/api/persons/:id", (request, response) => {
     });
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   const paramId = request.params.id;
 
   Person.findByIdAndDelete(paramId)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => {
@@ -127,7 +125,7 @@ app.post("/api/persons", (request, response) => {
   }
 });
 
-app.put("/api/persons/:id", (request, response) => {
+app.put("/api/persons/:id", (request, response, next) => {
   const paramId = request.params.id;
   const { name, number } = request.body;
 
