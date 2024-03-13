@@ -1,0 +1,24 @@
+GET http://localhost:3001/api/blogs/
+###
+GET http://localhost:3001/api//blogs/3
+
+###
+GET http://localhost:3001/api//blogs/65edf641c2243b6a5dfad75b
+
+###
+DELETE http://localhost:3001/api//blogs/65edf641c2243b6a5dfad75b
+
+
+###
+DELETE http://localhost:3001/api//blogs/4
+
+###
+POST http://localhost:3001/api/blogs/
+content-type: application/json
+
+{
+    "title":"test name",
+    "author": "test number",
+    "url": "test url",
+    "likes": 0
+}
