@@ -17,8 +17,8 @@ POST http://localhost:3001/api/blogs/
 content-type: application/json
 
 {
-    "title":"test name",
-    "author": "test number",
-    "url": "test url",
-    "likes": 0
+    "title":"Paul Muad'Dib Atreides",
+    "author": "12345",
+    "url": "http://www.dune.com",
+    "likes": 9999
 }
