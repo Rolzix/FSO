@@ -77,4 +77,11 @@ describe("total likes", () => {
     const result = listHelper.totalLikes(blogs);
     assert.strictEqual(result, 36);
   });
+  describe("favorite blog", () => {
+    test("of list (most likes)", () => {
+      const result = listHelper.favoriteBlog(blogs);
+      console.log(result);
+      assert.deepStrictEqual(result, blogs[2]);
+    });
+  });
 });
