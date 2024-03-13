@@ -84,4 +84,14 @@ describe("total likes", () => {
       assert.deepStrictEqual(result, blogs[2]);
     });
   });
+  describe("Author with most", () => {
+    test("blogs", () => {
+      const result = listHelper.mostBlogs(blogs);
+      assert.deepStrictEqual(result.author, "Robert C. Martin");
+    });
+    test("likes", () => {
+      const result = listHelper.mostLikes(blogs);
+      assert.deepStrictEqual(result.author, "Edsger W. Dijkstra");
+    });
+  });
 });
