@@ -50,7 +50,7 @@ test("unique identifier property of the blog posts is named id and not _id", asy
   assert(blog.id && !blog._id);
 });
 
-test.only("a valid blog can be added", async () => {
+test("a valid blog can be added", async () => {
   const blogs = await blog.find({});
   const amount = blogs.length;
   const newBlog = {
@@ -72,6 +72,16 @@ test.only("a valid blog can be added", async () => {
   assert.strictEqual(addedBlog.author, newBlog.author);
   assert.strictEqual(addedBlog.url, newBlog.url);
   assert.strictEqual(addedBlog.likes, newBlog.likes);
+});
+
+test.only("if likes property is missing, it will default to 0", async () => {
+  const newBlog = {
+    title: "Blog without Likes",
+    author: "Jane Doe",
+    url: "http://www.blogwithoutlikes.com",
+  };
+  const response = await api.post("/api/blogs").send(newBlog);
+  assert.strictEqual(response.body.likes, 0);
 });
 
 after(async () => {
