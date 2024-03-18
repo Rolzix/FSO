@@ -84,7 +84,7 @@ test("if likes property is missing, it will default to 0", async () => {
   assert.strictEqual(response.body.likes, 0);
 });
 
-test.only("if title or url properties are missing, backend responds with 400 Bad Request", async () => {
+test("if title or url properties are missing, backend responds with 400 Bad Request", async () => {
   const newBlog = {
     author: "Jane Doe",
     likes: 10,
@@ -93,6 +93,21 @@ test.only("if title or url properties are missing, backend responds with 400 Bad
   const response = await api.post("/api/blogs").send(newBlog);
   console.log(response);
   assert.strictEqual(response.status, 400);
+});
+
+test.only("If a blog is deleted succesfully, response 204 and blog is not the same as the spot it was deleted from", async () => {
+  const blogsBeforeDelete = await blog.find({});
+  const blogToDelete = blogsBeforeDelete[0];
+
+  const response = await api.delete(`/api/blogs/${blogToDelete._id}`);
+  assert.strictEqual(response.status, 204);
+
+  const blogsAfterDelete = await blog.find({});
+  assert.strictEqual(blogsAfterDelete.length, 1);
+  assert.notStrictEqual(
+    blogsAfterDelete[0]._id.toString(),
+    blogToDelete._id.toString()
+  );
 });
 
 after(async () => {
