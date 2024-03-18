@@ -1,6 +1,6 @@
 GET http://localhost:3001/api/blogs/
 ###
-GET http://localhost:3001/api//blogs/3
+GET http://localhost:3001/api/blogs/3
 
 ###
 GET http://localhost:3001/api//blogs/65edf641c2243b6a5dfad75b
@@ -22,3 +22,24 @@ content-type: application/json
     "url": "http://www.dune.com",
     "likes": 9999
 }
+###
+GET http://localhost:3001/api/users
+###
+POST http://localhost:3001/api/users/
+content-type: application/json
+
+{
+    "username":"Paul",
+    "name": "Paul Muad'Dib Atreides",
+    "password": "LisanAlGaib"
+}
+###
+POST http://localhost:3001/api/users/
+content-type: application/json
+
+{
+    "username":"Baron",
+    "name": "Baron Vladimir Harkonnen",
+    "password": "GiediPrime"
+}
+
