@@ -74,7 +74,7 @@ test("a valid blog can be added", async () => {
   assert.strictEqual(addedBlog.likes, newBlog.likes);
 });
 
-test.only("if likes property is missing, it will default to 0", async () => {
+test("if likes property is missing, it will default to 0", async () => {
   const newBlog = {
     title: "Blog without Likes",
     author: "Jane Doe",
@@ -82,6 +82,17 @@ test.only("if likes property is missing, it will default to 0", async () => {
   };
   const response = await api.post("/api/blogs").send(newBlog);
   assert.strictEqual(response.body.likes, 0);
+});
+
+test.only("if title or url properties are missing, backend responds with 400 Bad Request", async () => {
+  const newBlog = {
+    author: "Jane Doe",
+    likes: 10,
+  };
+
+  const response = await api.post("/api/blogs").send(newBlog);
+  console.log(response);
+  assert.strictEqual(response.status, 400);
 });
 
 after(async () => {
