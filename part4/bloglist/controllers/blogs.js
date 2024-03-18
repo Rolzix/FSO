@@ -3,7 +3,7 @@ const Blog = require("../models/blog");
 
 blogsRouter.get("", async (request, response) => {
   const blogs = await Blog.find({});
-  console.log("blogs", blogs);
+  // console.log("blogs", blogs);
   response.json(blogs);
 });
 
