@@ -43,11 +43,35 @@ test("blogs are returned as json", async () => {
     .expect("Content-Type", /application\/json/);
 }).catch((error) => console.error(error));
 
-test.only("unique identifier property of the blog posts is named id and not _id", async () => {
+test("unique identifier property of the blog posts is named id and not _id", async () => {
   const response = await api.get("/api/blogs");
   const blog = response.body[0];
   console.log(blog);
   assert(blog.id && !blog._id);
+});
+
+test.only("a valid blog can be added", async () => {
+  const blogs = await blog.find({});
+  const amount = blogs.length;
+  const newBlog = {
+    title: "New Blog Entry",
+    author: "John Smith",
+    url: "http://www.newblog.com",
+    likes: 10,
+  };
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAfterAddition = await blog.find({});
+  assert.strictEqual(blogsAfterAddition.length, amount + 1);
+  const addedBlog = blogsAfterAddition.find((b) => b.title === newBlog.title);
+  assert(addedBlog);
+  assert.strictEqual(addedBlog.author, newBlog.author);
+  assert.strictEqual(addedBlog.url, newBlog.url);
+  assert.strictEqual(addedBlog.likes, newBlog.likes);
 });
 
 after(async () => {
