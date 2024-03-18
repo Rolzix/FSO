@@ -3,7 +3,7 @@ const assert = require("node:assert");
 const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
-const blog = require("../models/blog");
+const Blog = require("../models/blog");
 // console.log("app", app);
 const api = supertest(app);
 
@@ -29,10 +29,10 @@ const initialBlogs = [
 ];
 
 beforeEach(async () => {
-  await blog.deleteMany({});
-  let blogObject = new blog(initialBlogs[0]);
+  await Blog.deleteMany({});
+  let blogObject = new Blog(initialBlogs[0]);
   await blogObject.save();
-  blogObject = new blog(initialBlogs[1]);
+  blogObject = new Blog(initialBlogs[1]);
   await blogObject.save();
 });
 
@@ -51,7 +51,7 @@ test("unique identifier property of the blog posts is named id and not _id", asy
 });
 
 test("a valid blog can be added", async () => {
-  const blogs = await blog.find({});
+  const blogs = await Blog.find({});
   const amount = blogs.length;
   const newBlog = {
     title: "New Blog Entry",
@@ -65,7 +65,7 @@ test("a valid blog can be added", async () => {
     .expect(201)
     .expect("Content-Type", /application\/json/);
 
-  const blogsAfterAddition = await blog.find({});
+  const blogsAfterAddition = await Blog.find({});
   assert.strictEqual(blogsAfterAddition.length, amount + 1);
   const addedBlog = blogsAfterAddition.find((b) => b.title === newBlog.title);
   assert(addedBlog);
@@ -95,19 +95,30 @@ test("if title or url properties are missing, backend responds with 400 Bad Requ
   assert.strictEqual(response.status, 400);
 });
 
-test.only("If a blog is deleted succesfully, response 204 and blog is not the same as the spot it was deleted from", async () => {
-  const blogsBeforeDelete = await blog.find({});
+test("If a blog is deleted succesfully, response 204 and blog is not the same as the spot it was deleted from", async () => {
+  const blogsBeforeDelete = await Blog.find({});
   const blogToDelete = blogsBeforeDelete[0];
 
   const response = await api.delete(`/api/blogs/${blogToDelete._id}`);
   assert.strictEqual(response.status, 204);
 
-  const blogsAfterDelete = await blog.find({});
+  const blogsAfterDelete = await Blog.find({});
   assert.strictEqual(blogsAfterDelete.length, 1);
   assert.notStrictEqual(
     blogsAfterDelete[0]._id.toString(),
     blogToDelete._id.toString()
   );
+});
+
+test.only("If a blog is updated succesfully, response 200 and blog is updated", async () => {
+  const blogsBeforeUpdate = await Blog.find({});
+  const blogToUpdate = blogsBeforeUpdate[0];
+  const updatedBlog = { _id: blogToUpdate._id.toString(), likes: 1000 };
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate._id}`)
+    .send(updatedBlog);
+  assert.strictEqual(response.status, 200);
+  assert.strictEqual(response.body.likes, 1000);
 });
 
 after(async () => {
