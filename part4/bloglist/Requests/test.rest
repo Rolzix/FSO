@@ -15,6 +15,7 @@ DELETE http://localhost:3001/api//blogs/4
 ###
 POST http://localhost:3001/api/blogs/
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkJhcm9uIiwiaWQiOiI2NWY4N2IzZGJiNzczYzU1MjExMGI1ZmUiLCJpYXQiOjE3MTUxMDM1MDZ9.EkB7P3sZuD2UlEor7lP8-Vymndl_tI8zQiT0e4nfNVc 
 
 {
     "title":"Dune",

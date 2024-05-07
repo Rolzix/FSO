@@ -1,6 +1,7 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 blogsRouter.get("", async (request, response) => {
   const blogs = await Blog.find({}).populate("user");
@@ -8,20 +9,34 @@ blogsRouter.get("", async (request, response) => {
   response.json(blogs);
 });
 
+const getTokenFrom = (request) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    return authorization.replace("Bearer ", "");
+  }
+  return null;
+};
+
 blogsRouter.post("", async (request, response) => {
   console.log("posting a request");
   const body = request.body;
   // console.log("body", body);
   // const users = await User.find({});
   // console.log("users", users);
-  const user = await User.aggregate([{ $sample: { size: 1 } }]);
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+  console.log(decodedToken);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
+  // const user = await User.aggregate([{ $sample: { size: 1 } }]);
 
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: user[0]._id, // store the user's ID
+    user: user, // store the user's ID
   });
   // console.log("blog", blog);
   // const user = await User.findById(body.userId);
@@ -38,10 +53,10 @@ blogsRouter.post("", async (request, response) => {
     // console.log("saved blog", savedBlog);
     // const populatedBlog = await Blog.findById(savedBlog._id).populate("user");
     // console.log("populatedBlog", populatedBlog);
-    // console.log("User 0 blogs", user[0].blogs);
+    // console.log("User 0 blogs", user.blogs);
     // console.log("saved blog id:", savedBlog._id);
-    user[0].blogs = user[0].blogs.concat(savedBlog._id);
-    await User.findByIdAndUpdate(user[0]._id, user[0]);
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await User.findByIdAndUpdate(user._id, user);
     response.status(201).json(savedBlog);
   }
 });
