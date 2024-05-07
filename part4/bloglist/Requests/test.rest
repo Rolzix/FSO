@@ -43,4 +43,13 @@ content-type: application/json
     "name": "Baron Vladimir Harkonnen",
     "password": "GiediPrime"
 }
+###
+POST http://localhost:3001/api/login/
+content-type: application/json
+
+{
+    "username":"Baron",
+    "password": "GiediPrime"
+}
+
 
