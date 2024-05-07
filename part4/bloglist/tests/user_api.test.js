@@ -12,11 +12,12 @@ const initialUsers = [
     username: "user1",
     name: "User One",
     password: "password",
+    userId: "663904ebc862ba6ddd11ebaf",
   },
   {
-    username: "user2",
-    name: "User Two",
-    password: "password",
+    username: "Paul",
+    name: "Paul Muad'Dib Atreides",
+    password: "LisanAlGaib",
   },
   {
     username: "user3",
@@ -55,6 +56,33 @@ test("user without password is not added", async () => {
   const usersAtEnd = await User.find({});
   assert(usersAtEnd.length === amount);
 });
+
+test("user with password shorter than 3 characters is not added", async () => {
+  const users = await User.find({});
+  const amount = users.length;
+  const newUser = {
+    username: "newuser",
+    name: "New User",
+    password: "pw",
+  };
+  await api.post("/api/users").send(newUser).expect(400);
+  const usersAtEnd = await User.find({});
+  assert(usersAtEnd.length === amount);
+});
+
+test("user with username shorter than 3 characters is not added", async () => {
+  const users = await User.find({});
+  const amount = users.length;
+  const newUser = {
+    username: "us",
+    name: "New User",
+    password: "password",
+  };
+  await api.post("/api/users").send(newUser).expect(400);
+  const usersAtEnd = await User.find({});
+  assert(usersAtEnd.length === amount);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });

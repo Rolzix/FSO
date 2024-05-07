@@ -17,10 +17,11 @@ POST http://localhost:3001/api/blogs/
 content-type: application/json
 
 {
-    "title":"Paul Muad'Dib Atreides",
+    "title":"Dune",
     "author": "12345",
     "url": "http://www.dune.com",
-    "likes": 9999
+    "likes": 9999,
+     "userId": "65f879e8b959243ad802760c"
 }
 ###
 GET http://localhost:3001/api/users

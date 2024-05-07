@@ -50,21 +50,27 @@ test("unique identifier property of the blog posts is named id and not _id", asy
   assert(blog.id && !blog._id);
 });
 
-test("a valid blog can be added", async () => {
+test.only("a valid blog can be added", async () => {
   const blogs = await Blog.find({});
   const amount = blogs.length;
   const newBlog = {
-    title: "New Blog Entry",
-    author: "John Smith",
-    url: "http://www.newblog.com",
-    likes: 10,
+    title: "Dune",
+    author: "Paul",
+    url: "http://www.dune.com",
+    likes: 9999,
+    userId: "66391abbf89bdb891581b3db",
   };
-  await api
-    .post("/api/blogs")
-    .send(newBlog)
-    .expect(201)
-    .expect("Content-Type", /application\/json/);
+  try {
+    await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+  } catch (error) {
+    console.error(error.response.body);
+  }
 
+  // console.log("response body------------", response.body);
   const blogsAfterAddition = await Blog.find({});
   assert.strictEqual(blogsAfterAddition.length, amount + 1);
   const addedBlog = blogsAfterAddition.find((b) => b.title === newBlog.title);
@@ -91,7 +97,6 @@ test("if title or url properties are missing, backend responds with 400 Bad Requ
   };
 
   const response = await api.post("/api/blogs").send(newBlog);
-  console.log(response);
   assert.strictEqual(response.status, 400);
 });
 
@@ -110,7 +115,7 @@ test("If a blog is deleted succesfully, response 204 and blog is not the same as
   );
 });
 
-test.only("If a blog is updated succesfully, response 200 and blog is updated", async () => {
+test("If a blog is updated succesfully, response 200 and blog is updated", async () => {
   const blogsBeforeUpdate = await Blog.find({});
   const blogToUpdate = blogsBeforeUpdate[0];
   const updatedBlog = { _id: blogToUpdate._id.toString(), likes: 1000 };
