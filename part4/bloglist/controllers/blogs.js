@@ -9,26 +9,20 @@ blogsRouter.get("", async (request, response) => {
   response.json(blogs);
 });
 
-const getTokenFrom = (request) => {
-  const authorization = request.get("authorization");
-  if (authorization && authorization.startsWith("Bearer ")) {
-    return authorization.replace("Bearer ", "");
-  }
-  return null;
-};
-
 blogsRouter.post("", async (request, response) => {
   console.log("posting a request");
   const body = request.body;
   // console.log("body", body);
   // const users = await User.find({});
   // console.log("users", users);
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
   console.log(decodedToken);
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
   }
   const user = await User.findById(decodedToken.id);
+
+  // get randomized user
   // const user = await User.aggregate([{ $sample: { size: 1 } }]);
 
   const blog = new Blog({
