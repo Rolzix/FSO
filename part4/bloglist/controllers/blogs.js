@@ -30,7 +30,8 @@ blogsRouter.post("", async (request, response) => {
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
   }
-  const user = await User.findById(decodedToken.id);
+  // const user = await User.findById(decodedToken.id);
+  const user = request.user;
 
   // get randomized user
   // const user = await User.aggregate([{ $sample: { size: 1 } }]);
