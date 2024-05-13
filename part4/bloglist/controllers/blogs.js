@@ -9,6 +9,17 @@ blogsRouter.get("", async (request, response) => {
   response.json(blogs);
 });
 
+blogsRouter.get("/:id", async (request, response) => {
+  const blog = await Blog.findById(request.params.id).populate("user");
+  if (blog) {
+    response.json(blog);
+  } else {
+    response.status(404).end();
+  }
+  // const blogs = await Blog.find({}).populate("user");
+  // console.log("blogs", blogs);
+});
+
 blogsRouter.post("", async (request, response) => {
   console.log("posting a request");
   const body = request.body;
@@ -16,7 +27,6 @@ blogsRouter.post("", async (request, response) => {
   // const users = await User.find({});
   // console.log("users", users);
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  console.log(decodedToken);
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
   }
@@ -56,8 +66,23 @@ blogsRouter.post("", async (request, response) => {
 });
 
 blogsRouter.delete("/:id", async (request, response) => {
-  await Blog.findOneAndDelete(request.params.id);
-  response.status(204).end();
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
+  const blog = await Blog.findById(request.params.id);
+  if (blog.user.toString() !== user._id.toString()) {
+    return response
+      .status(401)
+      .json({ error: "You can only delete your own blogs" });
+  } else {
+    await Blog.findOneAndDelete({ _id: request.params.id });
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { blogs: request.params.id },
+    });
+    response.status(200).json({ message: "Blog deleted" });
+  }
 });
 
 blogsRouter.put("/:id", async (request, response) => {
@@ -65,6 +90,7 @@ blogsRouter.put("/:id", async (request, response) => {
   const result = await Blog.findByIdAndUpdate(request.params.id, updatedBlog, {
     new: true,
   });
+
   response.json(result);
 });
 
