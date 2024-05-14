@@ -12,7 +12,6 @@ const initialUsers = [
     username: "user1",
     name: "User One",
     password: "password",
-    userId: "663904ebc862ba6ddd11ebaf",
   },
   {
     username: "Paul",
@@ -28,10 +27,27 @@ const initialUsers = [
 
 beforeEach(async () => {
   await User.deleteMany({});
-  let userObject = new User(initialUsers[0]);
-  await userObject.save();
-  userObject = new User(initialUsers[1]);
-  await userObject.save();
+
+  for (let user of initialUsers) {
+    await api
+      .post("/api/users")
+      .send(user)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+  }
+});
+
+test.only("create a new user", async () => {
+  const users = await User.find({});
+  const amount = users.length;
+  const newUser = {
+    username: "TestUser",
+    name: "Test user full name",
+    password: "password",
+  };
+  await api.post("/api/users").send(newUser).expect(201);
+  const usersAtEnd = await User.find({});
+  assert(usersAtEnd.length === amount + 1);
 });
 
 test("user without username or name is not added", async () => {
