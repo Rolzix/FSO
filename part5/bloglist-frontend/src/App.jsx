@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-
+import Notification from "./Components/Notification";
+import "./App.css";
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
@@ -11,6 +12,7 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [notification, setNotification] = useState([null, ""]);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -32,10 +34,12 @@ const App = () => {
       });
       blogService.setToken(user.token);
       setUser(user);
+      showNotification([`${user.name} logged in`, "green"]);
       setUsername("");
       setPassword("");
       window.localStorage.setItem("loggedInUser", JSON.stringify(user));
     } catch (exception) {
+      showNotification(`Wrong username or password`, "red");
       console.log("[debug] exception", exception);
       // setErrorMessage("Wrong credentials");
       setTimeout(() => {
@@ -61,7 +65,18 @@ const App = () => {
     const response = await blogService.create(newBlog);
     if (response != null) {
       await blogService.getAll().then((blogs) => setBlogs(blogs));
+      showNotification(
+        `a new blog ${newBlog.title} by ${newBlog.author} added`,
+        "green"
+      );
     }
+  };
+
+  const showNotification = (message, color) => {
+    setNotification([message, color]);
+    setTimeout(() => {
+      setNotification([null, ""]);
+    }, 5000);
   };
 
   if (user === null) {
@@ -71,6 +86,7 @@ const App = () => {
         <form onSubmit={handleLogin}>
           <div>
             username
+            <Notification message={notification} />
             <input
               type="text"
               value={username}
@@ -95,6 +111,7 @@ const App = () => {
     return (
       <div>
         <h2>blogs</h2>
+        <Notification message={notification} />
         <h3>
           {user.name} logged in <button onClick={logout}>logout</button>
         </h3>
