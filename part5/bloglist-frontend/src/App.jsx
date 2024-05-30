@@ -12,7 +12,6 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-
   const [notification, setNotification] = useState([null, ""]);
 
   useEffect(() => {
