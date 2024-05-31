@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, setBlogs }) => {
+const Blog = ({ blog, refreshBlogs }) => {
   const [visible, setVisible] = useState(false);
 
   const viewDetails = () => {
@@ -18,14 +18,13 @@ const Blog = ({ blog, setBlogs }) => {
       url: blog.url,
     };
 
-    console.log("[debug] updatedBlog", updatedBlog);
+    // console.log("[debug] updatedBlog", updatedBlog);
 
     try {
       const response = await blogService.update(blog.id, updatedBlog);
       console.log("[debug] response", response);
       if (response) {
-        const allBlogs = await blogService.getAll();
-        setBlogs(allBlogs);
+        refreshBlogs();
       }
     } catch (error) {
       console.log("[debug] trying to update blog error", error);

@@ -1,7 +1,7 @@
 import blogService from "../services/blogs";
 import { useState } from "react";
 
-const CreateBlog = ({ setBlogs, showNotification, logout }) => {
+const CreateBlog = ({ refreshBlogs, showNotification, logout }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -18,9 +18,7 @@ const CreateBlog = ({ setBlogs, showNotification, logout }) => {
       const response = await blogService.create(newBlog);
       console.log("[debug] response", response);
       if (response) {
-        const allBlogs = await blogService.getAll();
-        console.log("[debug] updating all blogs");
-        setBlogs(allBlogs);
+        refreshBlogs();
         showNotification(
           `a new blog ${newBlog.title} by ${newBlog.author} added`,
           "green"

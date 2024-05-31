@@ -15,7 +15,7 @@ const App = () => {
   const [notification, setNotification] = useState([null, ""]);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    refreshBlogs();
     const localStorageUser = window.localStorage.getItem("loggedInUser");
 
     if (localStorageUser) {
@@ -23,6 +23,13 @@ const App = () => {
       setUser(user);
     }
   }, []);
+
+  const refreshBlogs = () => {
+    blogService.getAll().then((blogs) => {
+      blogs.sort((a, b) => b.likes - a.likes);
+      setBlogs(blogs);
+    });
+  };
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -96,14 +103,14 @@ const App = () => {
 
         <Togglable buttonLabel="Create new blog">
           <CreateBlog
-            setBlogs={setBlogs}
+            refreshBlogs={refreshBlogs}
             showNotification={showNotification}
             logout={logout}
           />
         </Togglable>
         <br />
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
+          <Blog key={blog.id} blog={blog} refreshBlogs={refreshBlogs} />
         ))}
       </div>
     );
