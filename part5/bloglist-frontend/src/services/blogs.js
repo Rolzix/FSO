@@ -7,13 +7,14 @@ const setToken = (newToken) => {
   token = `Bearer ${newToken}`;
 };
 
-const create = async (newObject) => {
+const create = (newObject) => {
   const config = {
     headers: { Authorization: token },
   };
   console.log("[debug] token", token, "config", config);
-  const response = await axios.post(baseUrl, newObject, config);
-  return response.data;
+  return axios
+    .post(baseUrl, newObject, config)
+    .then((response) => response.data);
 };
 
 const update = (id, newObject) => {
@@ -26,4 +27,13 @@ const getAll = () => {
   return request.then((response) => response.data);
 };
 
-export default { getAll, create, setToken, update };
+const deleteOne = (id) => {
+  const config = {
+    headers: { Authorization: token },
+  };
+  return axios
+    .delete(`${baseUrl}/${id}`, config)
+    .then((response) => response.data);
+};
+
+export default { getAll, create, setToken, update, deleteOne };

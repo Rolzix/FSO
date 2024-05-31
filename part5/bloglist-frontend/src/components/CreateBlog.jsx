@@ -26,7 +26,7 @@ const CreateBlog = ({ refreshBlogs, showNotification, logout }) => {
       }
     } catch (error) {
       console.log("[debug] error", error);
-      if (error.status === 401) {
+      if (error.response.status === 401) {
         logout();
         showNotification(`Unauthorized, Please log in`, "red");
       }
