@@ -95,11 +95,15 @@ const App = () => {
         </h3>
 
         <Togglable buttonLabel="Create new blog">
-          <CreateBlog setBlogs={setBlogs} showNotification={showNotification} />
+          <CreateBlog
+            setBlogs={setBlogs}
+            showNotification={showNotification}
+            logout={logout}
+          />
         </Togglable>
         <br />
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} setBlogs={setBlogs} />
         ))}
       </div>
     );

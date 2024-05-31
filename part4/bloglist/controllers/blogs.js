@@ -71,10 +71,14 @@ blogsRouter.delete("/:id", async (request, response) => {
   }
 });
 blogsRouter.put("/:id", async (request, response) => {
+  console.log("[Debug] request.params.id: ", request.params.id);
+  console.log("[Debug] request.body: ", request.body);
   const updatedBlog = request.body;
+  console.log("[Debug] updatedBlog: ", updatedBlog);
   const result = await Blog.findByIdAndUpdate(request.params.id, updatedBlog, {
     new: true,
   });
   response.json(result);
+  response.status(200).end();
 });
 module.exports = blogsRouter;

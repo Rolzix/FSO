@@ -1,7 +1,7 @@
 import blogService from "../services/blogs";
 import { useState } from "react";
 
-const CreateBlog = ({ setBlogs, showNotification }) => {
+const CreateBlog = ({ setBlogs, showNotification, logout }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -14,13 +14,27 @@ const CreateBlog = ({ setBlogs, showNotification }) => {
       url: url,
     };
 
-    const response = await blogService.create(newBlog);
-    if (response != null) {
-      await blogService.getAll().then((blogs) => setBlogs(blogs));
-      showNotification(
-        `a new blog ${newBlog.title} by ${newBlog.author} added`,
-        "green"
-      );
+    try {
+      const response = await blogService.create(newBlog);
+      console.log("[debug] response", response);
+      if (response) {
+        const allBlogs = await blogService.getAll();
+        console.log("[debug] updating all blogs");
+        setBlogs(allBlogs);
+        showNotification(
+          `a new blog ${newBlog.title} by ${newBlog.author} added`,
+          "green"
+        );
+      }
+    } catch (error) {
+      console.log("[debug] error", error);
+      if (error.status === 401) {
+        logout();
+        showNotification(`Unauthorized, Please log in`, "red");
+      }
+      if (error.response.data) {
+        showNotification(`${error.response.data["error"]}`, "red");
+      }
     }
   };
   return (
