@@ -4,8 +4,6 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
-const User = require("../models/user");
-// console.log("app", app);
 const api = supertest(app);
 const loginUser = async () => {
   const userCredentials = {
@@ -20,6 +18,7 @@ const loginUser = async () => {
 
   return response.body;
 };
+
 const initialBlogs = [
   {
     title: "Paul Muad'Dib Atreides",
@@ -68,7 +67,7 @@ test("unique identifier property of the blog posts is named id and not _id", asy
   assert(blog.id && !blog._id);
 });
 
-test.only("a valid blog can be added", async () => {
+test("a valid blog can be added", async () => {
   const blogs = await Blog.find({});
   const amount = blogs.length;
 
@@ -101,7 +100,6 @@ test.only("a valid blog can be added", async () => {
 
 test.only("adding a blog fails with the proper status code 401 Unauthorized if a token is not provided", async () => {
   const user = await loginUser();
-  const token = user.token;
 
   const newBlog = {
     title: "Dune",

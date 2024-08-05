@@ -6,6 +6,7 @@ blogsRouter.get("", async (request, response) => {
   const blogs = await Blog.find({}).populate("user");
   response.json(blogs);
 });
+
 blogsRouter.get("/:id", async (request, response) => {
   const blog = await Blog.findById(request.params.id).populate("user");
   if (blog) {
@@ -15,6 +16,7 @@ blogsRouter.get("/:id", async (request, response) => {
   }
   // const blogs = await Blog.find({}).populate("user");
 });
+
 blogsRouter.post("", async (request, response) => {
   const body = request.body;
   // const users = await User.find({});
@@ -51,6 +53,7 @@ blogsRouter.post("", async (request, response) => {
     response.status(201).json(savedBlog);
   }
 });
+
 blogsRouter.delete("/:id", async (request, response) => {
   if (!request.token) {
     return response
@@ -75,6 +78,7 @@ blogsRouter.delete("/:id", async (request, response) => {
     response.status(200).json({ message: "Blog deleted" });
   }
 });
+
 blogsRouter.put("/:id", async (request, response) => {
   console.log("[Debug] request.params.id: ", request.params.id);
   console.log("[Debug] request.body: ", request.body);
